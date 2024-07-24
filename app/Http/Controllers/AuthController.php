@@ -34,7 +34,7 @@ class AuthController extends Controller
                 'user' => $user,
                 'message' => 'Your account was created!'
             ],
-            200
+            201
         );
     }
 
@@ -50,7 +50,7 @@ class AuthController extends Controller
             return response($errors->errors()->all(), 422);
         }
 
-        $user = User::where('email', $fields['email']);
+        $user = User::where('email', $fields['email'])->first();
 
         if (!$user || !Hash::check($fields['password'], $user->password)) {
             return response('Credentials are invalid', 401);
@@ -61,6 +61,6 @@ class AuthController extends Controller
         return response([
             'user' => $user,
             'token' => $token
-        ]);
+        ], 201);
     }
 }
