@@ -11,13 +11,13 @@ class PostController extends Controller
 {
     public function getPosts(Request $request)
     {
-        $query = $request->get('query');
+        $query = $request->query('query');
         $posts = DB::table('posts');
 
         if (empty($query)) {
-            return response($posts->paginate(10), 200);
+            return response(['posts' => $posts->paginate(10), 'request' => $request->all()], 200);
         } else {
-            return response($posts->where('title', 'like', '%' . $query . '%')->paginate(10), 200);
+            return response(['posts' => $posts->where('title', 'like', '%' . $query . '%')->paginate(10), 'query' => $query], 200);
             // return response('Query is empty', 204);
         }
     }
@@ -41,15 +41,19 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $post = Post::find($id);
+        if (empty($post)) {
+            return response(['message' => 'Resource not found'], 404);
+        }
         $fields = $request->all();
         $errors = $this->postValidation($fields);
         if ($errors->fails()) {
             return response($errors->errors()->all(), 422);
         }
-        $post = $post->update([
+        $post = $post->save([
             'title' => $fields['title'],
             'post_content' => $fields['post_content'],
         ]);
+        return response($post, 200);
     }
 
     public function postValidation($fields)

@@ -14,3 +14,4 @@ Route::post('login', [AuthController::class, 'login']);
 
 Route::get('posts', [PostController::class, 'getPosts']);
 Route::post('posts', [PostController::class, 'store']);
+Route::put('posts/{id}', [PostController::class, 'update']);
