@@ -45,11 +45,12 @@ class PostController extends Controller
             return response(['message' => 'Resource not found'], 404);
         }
         $fields = $request->all();
+        dd($request->all());
         $errors = $this->postValidation($fields);
         if ($errors->fails()) {
             return response($errors->errors()->all(), 422);
         }
-        $post = $post->save([
+        $post = $post->update([
             'title' => $fields['title'],
             'post_content' => $fields['post_content'],
         ]);
