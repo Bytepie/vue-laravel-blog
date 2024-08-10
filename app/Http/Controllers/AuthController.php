@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -67,13 +68,30 @@ class AuthController extends Controller
 
     public function logoutuser(Request $request)
     {
-        $userId = $request->userId;
-        DB::table('personal_access_tokens')
-            ->where('tokenable', $userId)
-            ->delete();
+        // $token = $request->header('Authorization');
+        $token = $request->bearerToken();
+
+        if ($token) {
+            $tokenInstance = PersonalAccessToken::findToken($token);
+        }
+
+        if ($tokenInstance) {
+            // $user = $tokenInstance->tokenable; // to get user
+            // dd($user);
+            $tokenInstance->delete();
+            return response(
+                ['message' => 'User Logged out'],
+                200
+            );
+        }
+
+        // DB::table('personal_access_tokens')
+        //     ->where('token', $token)
+        //     ->delete(); // inefficient way / plus the tokens are hashed in the database
+
         return response(
-            ['message' => 'User Logged out'],
-            200
+            ['message' => 'Something went wrong'],
+            422
         );
     }
 }
