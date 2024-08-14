@@ -51,7 +51,7 @@ class PostController extends Controller
         if ($errors->fails()) {
             return response($errors->errors()->all(), 422);
         }
-        $post = $post->update([
+        $post->update([
             'title' => $fields['title'],
             'post_content' => $fields['post_content'],
         ]);
